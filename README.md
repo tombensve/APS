@@ -12,7 +12,7 @@ Work is slow, whenever time permits.
 
 To be very clear: **This is currently, and probably for a long time comming, a playground where I'm having fun.**
 
-The __original (and still active) goal__ with this is to provide support for message driven services including both frontend and backend. APS supplies APIs for sending and receiving messages in JSON using a bus model. How that is accomplished depends on what implementations of APSBusRouter are deployed. APS includes a Vert.x based implementation but the APIs is very simple and implementation using anything should be possible. I am considering also providing an implementation that handles and can do REST calls. Application code will still receive and produce messages. Applications should never care about the were and how of messages, only the messages and their contents. 
+The __original (and still active) goal__ with this is to provide support for message driven services including both frontend and backend. APS supplies APIs for sending and receiving messages in JSON using a bus model. How that is accomplished depends on what implementations of APSBusRouter are deployed. APS includes a Vert.x based implementation but the APIs are very simple and implementation using anything should be possible. I am considering also providing an implementation that handles and can do REST calls. Application code will still receive and produce messages. Applications should never care about the were and how of messages, only the messages and their contents. 
 
 I'm doing this because I like the idea and wan't to confirm that this actually is a good idea. I might run into problem I haven't forseen, I might even end up saying "No, this was a bad idea!", but so far I still beleive in this. 
 
