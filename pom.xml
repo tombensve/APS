@@ -94,16 +94,13 @@
         <vaadin.version>7.1.14</vaadin.version>
         <osgi.version>4.2.0</osgi.version>
         <mixin.plugin.version>0.1-alpha-39</mixin.plugin.version>
-        <clm.version>2.2.1</clm.version>
+        <clm.version>2.2.2</clm.version>
         <ftpPlugin.version>1.0.1</ftpPlugin.version>
-        <markdownDoc.version>2.1.0</markdownDoc.version>
+        <markdownDoc.version>3.0.0</markdownDoc.version>
         <groovy.version>3.0.2</groovy.version>
-        <!--groovy.version>2.5.7</groovy.version-->
         <vertx.version>3.8.0</vertx.version>
         <netty.version>4.1.19.Final</netty.version>
         <hazelcast.version>3.6.3</hazelcast.version>
-        <jackson.annotations.version>2.7.0</jackson.annotations.version>
-        <jackson.core.version>2.7.4</jackson.core.version>
     </properties>
 
     <!--
@@ -146,13 +143,22 @@
     </issueManagement>
 
     <!--
-        Make sure we have access to JCenter!!
+        Make sure we have access to download.natusoft.se/maven.
+
+        This is where I publish my packages for now.
+
+        I have released one package on maven central and that was the most
+        awful experience ever! It has gotten a little better now, a little!
+        As long as maven central does not become as easy as bintray was or my
+        web server is now, I'll stay away from maven central. I refuse to
+        get a knot in my stomach and feel nauseous whenever I need to release
+        a new version. A new Bintray is strongly needed!!!
     -->
     <repositories>
         <repository>
-            <id>jcenter</id>
-            <name>jcenter</name>
-            <url>https://jcenter.bintray.com</url>
+            <id>dnse</id>
+            <name>NSPackages</name>
+            <url>http://download.natusoft.se/maven/</url>
         </repository>
     </repositories>
 
@@ -286,9 +292,6 @@
     </distributionManagement>
     -->
 
-    <!--
-        This makes my bintray repository available for dependencies not in jcenter.
-    -->
     <build>
         <extensions>
             <!-- Enabling the use of FTP -->

@@ -127,8 +127,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
 
     /**
      * This means that already existing instances are provided in constructor and/or addManagedInstance(...).
-     * This way you can manage injections in a servlet for example. Please note that in addition to the
-     * already provided instances like servlets or other framework instances all classes in the bundle
+     * Please note that in addition to the already provided instances all classes in the bundle
      * will still be scanned and handled! It will of course sort out any duplicates due to the already
      * passed instances can be instances of a bundle class.
      */
