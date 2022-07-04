@@ -101,7 +101,7 @@
         <!--groovy.version>2.5.7</groovy.version-->
         <vertx.version>3.8.0</vertx.version>
         <netty.version>4.1.19.Final</netty.version>
-        <hazelcast.version>4.0.5</hazelcast.version>
+        <hazelcast.version>5.1</hazelcast.version>
         <jackson.annotations.version>2.7.0</jackson.annotations.version>
         <jackson.core.version>2.7.4</jackson.core.version>
     </properties>
