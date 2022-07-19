@@ -12,8 +12,6 @@ __JDK Level:__ This now builds with all tests working on JDK 11. No, there is no
 
 A new APS2 project will be created to replace this.
 
-OSGi will be dumped and replaced with simple Java ServiceLoader services. That is for internal "platform" services!
-
 ----
 
 ## This project is work in progress and currently cannot be expected to be completely stable!!
