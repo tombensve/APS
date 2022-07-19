@@ -14,18 +14,6 @@ A new APS2 project will be created to replace this.
 
 OSGi will be dumped and replaced with simple Java ServiceLoader services. That is for internal "platform" services!
 
-APS2 will define an API for message driven communication using JSON. It will be called "APSMessager" to avoid confusion with other things. In this version it is called APSBus, which is a bad name.
-
-The "Messager" will be an API that providers implement. So how messages are sent from a to b is not defined. Today in APS there is an APSBus implementation using Vert.x 3. In next version there will be an implementation of APSMessager using Vert.x 4. But the APSMessager API can be implemented using anything. How a message goes from point a to point b is not in general relevant. It depends on what APSMessager implementations are proviced. Code using APSMessager should not care what the implementation is. I will provide one implementation based on Vert.x 4 and one that simply passes message in within same JVM instance. So how messages are sent depends on what API providers are included in executable jar. I'm planning to use Maven Shade plugin.
-
-Preferrably it will be possible to include both "in JVM" and "over network" messages in same jar that auto resolves how to send messages and where. Haven't completely figured out all detains yet, but this is  my goal. 
-
-The only code using ServiceLoader mechanism is code providing implementation of external communication. I call these platform services. Code using APSMessager I call ... well I haven't come up with a good name yet. Providing services ? Functional services ? APS services ? ... 
-
-And yes, the remote services will talk REST and other protocol, like Vert.x event bus. Will actually provide REST by receiving REST calls and sending content as a message using APSMessager, and the reply to that will be send back to caller according to REST. Implementation wise all services will deal with messages. Vert.x 4 supports STOMP and I plan to have a STOMP provider for sending APSMessager messages.
-
-The most important rule is KEEP IT SIMPLE! I hope to accomplish that. In this APS version I clearly failed.
-
 ----
 
 ## This project is work in progress and currently cannot be expected to be completely stable!!
