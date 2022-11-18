@@ -15,7 +15,7 @@
     "react-layout-components": "^3.0.6",
     "react-markdown": "^3.4.1",
     "react-numeric-input": "^2.2.3",
-    "react-scripts": "1.1.4",
+    "react-scripts": "5.0.1",
     "uuid": "^3.3.2",
     "vertx3-eventbus-client": "^3.8.0"
   },
