@@ -1,0 +1,16 @@
+# This version will build the local checkout within the container. It is however
+# very, very, very slow. An hour on my machine. Recreating image with latest source
+# copied to image takes 11 minutes.
+FROM openjdk:11
+
+COPY /old-shit/docker-build/files/settings.xml /root/.m2/settings.xml
+COPY /apache-maven /apache-maven/
+COPY /node-v12.13.1-linux-x64 /node-v12.13.1-linux-x64/
+COPY /old-shit/docker-build/bin/container/make-m2-repo-link.sh /aps-container-tools/
+
+
+RUN mkdir /m2repo
+RUN /aps-container-tools/make-m2-repo-link.sh
+
+VOLUME /m2repo
+
