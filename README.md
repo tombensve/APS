@@ -1,5 +1,3 @@
-----
-
 _Do note that I've moved from YouTrack to GitHub issues. The catch with this is that there might be branch collisions between
 new and old in the long run. I'm hoping to be able to delete the old before that happens. Looking at currenbt branches might
 be confusing._ 
