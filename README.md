@@ -4,9 +4,25 @@ __Version:__ 1.0.0 (working up to ...)
 
 __License:__ [Apache 2.0](lics/Apache-2.0.md)
 
-__JDK Level:__ This now builds with all tests working on JDK 11. No, there is no JPMS usage! And it is also using a beta of Groovy 3.0. Have not run into any problem with Groovy being beta so far. 
+__JDK Level:__ This now builds with all tests working on JDK 11. No, there is no JPMS usage! 
+
+__Groovy version:__ 4.0.6 (now 100% Groovy, but can still be used from Java)
 
 ## This project is work in progress and currently cannot be expected to be completely stable!!
+
+
+**Below is currently old docs. APS is being completely redone from scratch reusing some core classes
+of old version, but even those are slightly modified.**
+
+- OSGi or rather OSGi:ish is now completely dropped! Will now use ServiceLoader services and use
+  Googles annotation processor for automatically register such services under META-INF. 
+
+- Will still define APIs for the platform (minimal) and hide all implementations behind those, 
+  making implementations irrelevant and can be implemented using whatever works. The default
+  implementations will still use Vert.x. 
+
+
+∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞
 
 Work is slow, whenever time permits.
 
