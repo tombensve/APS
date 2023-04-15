@@ -5,7 +5,7 @@
   "comment1": "Suggested in https://github.com/facebook/create-react-app/issues/165",
   "homepage": "/apsweb",
   "dependencies": {
-    "moment": "^2.22.2",
+    "moment": "^2.29.4",
     "moment-range": "^4.0.1",
     "prop-types": "^15.6.2",
     "react": "^16.4.1",
